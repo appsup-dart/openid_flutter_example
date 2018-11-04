@@ -6,8 +6,7 @@ package.
 ## Screens
 
 ### Issuers list 
-The home screen s
-hows a list of known issuers. With the `+`-button, 
+The home screen shows a list of known issuers. With the `+`-button, 
 you can add a new issuer.
 
 ![list of issuers](docs/issuer_list.png)
