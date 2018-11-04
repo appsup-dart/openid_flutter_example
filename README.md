@@ -10,7 +10,7 @@ The home screen s
 hows a list of known issuers. With the `+`-button, 
 you can add a new issuer.
 
-![list of issuers](docs/issuer_list.png =250x)
+![list of issuers](docs/issuer_list.png)
 
 
 Clicking on an issuer will open the issuer details page with two tabs: 
@@ -24,7 +24,7 @@ This page shows the metadata of the issuer as discovered from the
 https://issuer.host/.well-known/openid-configuration url.
 
 
-![issuer metadata](docs/issuer_metadata.png =250x)
+![issuer metadata](docs/issuer_metadata.png)
 
 
 ### Client list
@@ -33,7 +33,7 @@ Shows a list of configured clients for the selected issuer. One can add
 additional clients with the `+`-button or edit an existing one.
 
 
-![client list](docs/client_list.png =250x)
+![client list](docs/client_list.png)
 
 Each client in the list has a `login`-button. Pressing this button
 will open a browser window to start the authentication. After completing
@@ -43,7 +43,7 @@ newly signed in user.
 
 Note: the Authorization Code with PKCE flow will be used
 
-![signed in user](docs/signed_in.png =250x)
+![signed in user](docs/signed_in.png)
 
 ### Edit client
 
