@@ -131,9 +131,6 @@ class OpenIdStore {
     var authenticator = new Authenticator(client,
         scopes: clientInfo["scopes"].split(","),
         port: 4000, urlLancher: (url) async {
-      var uri = Uri.parse(url)
-          .replace(scheme: "fbauth2", path: "", host: "authorize");
-//      url = uri.toString();
       if (await canLaunch(url)) {
         await launch(url, forceWebView: true);
       } else {
