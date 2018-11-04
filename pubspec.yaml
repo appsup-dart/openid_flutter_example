@@ -8,7 +8,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  openid_client: any
+  openid_client: ^0.2.1
   shared_preferences: ^0.4.3
   rxdart: ^0.19.0
   url_launcher:
