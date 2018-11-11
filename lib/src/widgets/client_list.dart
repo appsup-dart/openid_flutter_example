@@ -86,8 +86,9 @@ class ClientCard extends StatelessWidget {
                             decoration: BoxDecoration(color: Color(0xFFCCCCCC)),
                             child: ListTile(
                               leading: CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(user.picture?.toString()),
+                                backgroundImage: user.picture == null
+                                    ? null
+                                    : NetworkImage(user.picture.toString()),
                               ),
                               title:
                                   Text("${user.givenName} ${user.familyName}"),
