@@ -82,6 +82,7 @@ class OpenIdStore {
       "issuer": issuer.toString(),
       "client_id": "",
       "client_secret": "",
+      "redirect_uri": null,
       "name": "Client $id",
       "scopes": ""
     };
@@ -118,7 +119,7 @@ class OpenIdStore {
   }
 
   Future<void> signOff(Map<String, dynamic> clientInfo) async {
-    _storage.set("token:${clientInfo["id"]}", "");
+    _storage.set("token_response:${clientInfo["id"]}", {});
   }
 
   Future<UserInfo> signIn(Map<String, dynamic> clientInfo) async {
@@ -130,6 +131,9 @@ class OpenIdStore {
     );
     var authenticator = new Authenticator(client,
         scopes: clientInfo["scopes"].split(","),
+        redirectUri: clientInfo["redirect_uri"] == null
+            ? null
+            : Uri.parse(clientInfo["redirect_uri"]),
         port: 4000, urlLancher: (url) async {
       if (await canLaunch(url)) {
         await launch(url, forceWebView: true);
@@ -140,28 +144,46 @@ class OpenIdStore {
     var c = await authenticator.authorize();
     closeWebView();
     _storage.set("token:${clientInfo["id"]}", c.refreshToken);
-    var user = await c.getUserInfo();
-    return user;
+    _storage.set("token_response:${clientInfo["id"]}", c.response);
+    return _userFromCredential(c);
   }
+
+  Future<UserInfo> _userFromCredential(Credential c) async {
+    if (c.refreshToken != null) return await c.getUserInfo();
+
+    return _userFromResponse(c.response);
+  }
+
+  UserInfo _userFromResponse(Map<String, dynamic> response) =>
+      new UserInfo.fromJson({
+        "given_name": "",
+        "family_name": "",
+        "email": json.encode(response)
+      });
 
   final Map<String, BehaviorSubject<UserInfo>> _currentUsers = {};
 
   Stream<UserInfo> currentUser(Map<String, dynamic> clientInfo) {
-    var key = "token:${clientInfo["id"]}";
+    var key = "token_response:${clientInfo["id"]}";
 
     return _currentUsers.putIfAbsent(key, () {
       var s = new BehaviorSubject<UserInfo>();
-      s.addStream(_storage.get(key, "").cast<String>().asyncMap((t) async {
-        if (t.isEmpty) return null;
-        var uri = Uri.parse(clientInfo["issuer"]);
-        var issuer = await Issuer.discover(uri);
-        var client = new Client(
-          issuer,
-          clientInfo["client_id"],
-        );
-        var c = client.createCredential(refreshToken: t);
-        return await c.getUserInfo();
-      }));
+      s.addStream(_storage.get(key, {}).cast<Map>().asyncMap((t) async {
+            if (t.isEmpty) return null;
+            if (t["refresh_token"] != null) {
+              var uri = Uri.parse(clientInfo["issuer"]);
+              var issuer = await Issuer.discover(uri);
+              var client = new Client(
+                issuer,
+                clientInfo["client_id"],
+              );
+
+              var c = client.createCredential(refreshToken: t["refresh_token"]);
+              return await c.getUserInfo();
+            } else {
+              return _userFromResponse(t);
+            }
+          }));
       return s;
     }).stream;
   }

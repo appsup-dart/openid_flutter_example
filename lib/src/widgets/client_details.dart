@@ -25,6 +25,7 @@ class _ClientDetailsWidgetState extends State<ClientDetailsWidget> {
       controllers[k] ??= TextEditingController();
       controllers[k].text = v;
     });
+    controllers["redirect_uri"] ??= TextEditingController();
     super.initState();
   }
 
@@ -81,6 +82,13 @@ class _ClientDetailsWidgetState extends State<ClientDetailsWidget> {
                         if (v.isEmpty) return "client id is required";
                       },
                       decoration: InputDecoration(labelText: "client id"),
+                    ),
+                    TextFormField(
+                      controller: controllers["redirect_uri"],
+                      keyboardType: TextInputType.url,
+                      decoration: InputDecoration(
+                          labelText: "redirect uri",
+                          helperText: "leave blank for PKCE flow"),
                     ),
                     ValueListenableBuilder<TextEditingValue>(
                         valueListenable: controllers["scopes"],
